@@ -1,0 +1,25 @@
+import unittest
+import requests
+
+class APITestCase(unittest.TestCase):
+    BASE_URL = 'http://example.com/api/items'
+
+    def test_delete_item(self):
+        # Assuming we have an item with ID 1 that we want to delete
+        item_id = 1
+        delete_url = f'{self.BASE_URL}/{item_id}'
+
+        # Send DELETE request to the API
+        response = requests.delete(delete_url)
+
+        # Check if the response status code is 204 (No Content) or 200 (OK)
+        self.assertIn(response.status_code, [200, 204], 
+                      msg=f"Expected status code 200 or 204, got {response.status_code}")
+
+        # Optionally, verify the item no longer exists
+        response = requests.get(delete_url)
+        self.assertEqual(response.status_code, 404, 
+                         msg=f"Expected status code 404 for non-existent item, got {response.status_code}")
+
+if __name__ == '__main__':
+    unittest.main()
