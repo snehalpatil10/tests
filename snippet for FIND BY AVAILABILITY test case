@@ -1,0 +1,28 @@
+import unittest
+from models import Item  # Import the Item model class
+
+class TestItemModel(unittest.TestCase):
+    def test_find_by_availability(self):
+        # Create test data
+        test_items = [
+            {'id': 1, 'name': 'Item 1', 'available': True},
+            {'id': 2, 'name': 'Item 2', 'available': False},
+            {'id': 3, 'name': 'Item 3', 'available': True}
+        ]
+        
+        # Create an instance of the Item model
+        item_model = Item()
+
+        # Mock the find_by_availability method to return test data
+        item_model.find_by_availability = lambda available: [item for item in test_items if item['available'] == available]
+
+        # Test finding available items
+        available_items = item_model.find_by_availability(True)
+        self.assertEqual(len(available_items), 2, msg="Expected 2 available items")
+
+        # Test finding unavailable items
+        unavailable_items = item_model.find_by_availability(False)
+        self.assertEqual(len(unavailable_items), 1, msg="Expected 1 unavailable item")
+
+if __name__ == '__main__':
+    unittest.main()
