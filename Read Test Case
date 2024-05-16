@@ -1,1 +1,37 @@
 
+import unittest
+import requests
+
+class APITestCase(unittest.TestCase):
+    BASE_URL = 'http://example.com/api/items'
+
+    def test_read_item(self):
+        # The ID of the item to retrieve
+        item_id = 1
+        read_url = f'{self.BASE_URL}/{item_id}'
+
+        # Send GET request to the API to retrieve the item by ID
+        response = requests.get(read_url)
+
+        # Verify the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200, 
+                         msg=f"Expected status code 200, got {response.status_code}")
+
+        # Verify the response content is a JSON object
+        try:
+            item = response.json()
+            self.assertIsInstance(item, dict, 
+                                  msg="Expected response to be a JSON object")
+        except ValueError:
+            self.fail("Response is not in JSON format")
+
+        # Verify that the returned item has the expected ID
+        self.assertEqual(item.get('id'), item_id, 
+                         msg=f"Expected item ID {item_id}, got {item.get('id')}")
+
+        # Optionally, perform additional checks on the item
+        self.assertIn('name', item, msg="Item does not have 'name' field")
+        self.assertIn('available', item, msg="Item does not have 'available' field")
+
+if __name__ == '__main__':
+    unittest.main()
