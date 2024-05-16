@@ -1,0 +1,7 @@
+from behave import then
+from selenium.webdriver.common.by import By
+
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    elements = context.driver.find_elements(By.XPATH, f"//*[contains(text(), '{message}')]")
+    assert elements, f"Expected message '{message}' not found on the page"
