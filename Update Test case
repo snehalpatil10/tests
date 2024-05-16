@@ -1,0 +1,46 @@
+import unittest
+import requests
+import json
+
+class APITestCase(unittest.TestCase):
+    BASE_URL = 'http://example.com/api/items'
+
+    def test_update_item(self):
+        # The ID of the item to update
+        item_id = 1
+        update_url = f'{self.BASE_URL}/{item_id}'
+
+        # The data to update the item with
+        updated_data = {
+            'name': 'Updated Item Name',
+            'available': False
+        }
+
+        # Send PUT request to the API to update the item by ID
+        response = requests.put(update_url, json=updated_data)
+
+        # Verify the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200, 
+                         msg=f"Expected status code 200, got {response.status_code}")
+
+        # Verify the response content is a JSON object
+        try:
+            item = response.json()
+            self.assertIsInstance(item, dict, 
+                                  msg="Expected response to be a JSON object")
+        except ValueError:
+            self.fail("Response is not in JSON format")
+
+        # Verify that the updated fields match the input data
+        self.assertEqual(item.get('name'), updated_data['name'], 
+                         msg=f"Expected item name '{updated_data['name']}', got '{item.get('name')}'")
+        self.assertEqual(item.get('available'), updated_data['available'], 
+                         msg=f"Expected item availability '{updated_data['available']}', got '{item.get('available')}'")
+
+        # Optionally, perform additional checks on the item
+        self.assertIn('id', item, msg="Item does not have 'id' field")
+        self.assertEqual(item['id'], item_id, 
+                         msg=f"Expected item ID {item_id}, got {item['id']}")
+
+if __name__ == '__main__':
+    unittest.main()
