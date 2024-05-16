@@ -1,0 +1,33 @@
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# Example data - replace with your actual database access logic
+items = [
+    {'id': 1, 'name': 'Item 1', 'category': 'Category A', 'available': True},
+    {'id': 2, 'name': 'Item 2', 'category': 'Category B', 'available': False},
+    {'id': 3, 'name': 'Item 3', 'category': 'Category A', 'available': True}
+]
+
+@app.route('/api/items', methods=['GET'])
+def list_all_items():
+    return jsonify(items), 200
+
+@app.route('/api/items/by-name/<string:item_name>', methods=['GET'])
+def list_items_by_name(item_name):
+    filtered_items = [item for item in items if item['name'].lower() == item_name.lower()]
+    return jsonify(filtered_items), 200
+
+@app.route('/api/items/by-category/<string:category>', methods=['GET'])
+def list_items_by_category(category):
+    filtered_items = [item for item in items if item['category'].lower() == category.lower()]
+    return jsonify(filtered_items), 200
+
+@app.route('/api/items/by-availability/<string:availability>', methods=['GET'])
+def list_items_by_availability(availability):
+    availability_bool = availability.lower() == 'true'
+    filtered_items = [item for item in items if item['available'] == availability_bool]
+    return jsonify(filtered_items), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
