@@ -1,0 +1,34 @@
+from flask_sqlalchemy import SQLAlchemy
+from app import app
+
+# Import SQLAlchemy instance from Flask app
+db = SQLAlchemy(app)
+
+# Define Product model
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    available = db.Column(db.Boolean, default=True)
+
+# Load background data (products)
+def load_products():
+    products_data = [
+        {'name': 'Product 1', 'category': 'Category A', 'price': 10.0, 'available': True},
+        {'name': 'Product 2', 'category': 'Category B', 'price': 20.0, 'available': False},
+        {'name': 'Product 3', 'category': 'Category A', 'price': 15.0, 'available': True}
+    ]
+
+    for product_data in products_data:
+        product = Product(name=product_data['name'],
+                          category=product_data['category'],
+                          price=product_data['price'],
+                          available=product_data['available'])
+        db.session.add(product)
+
+    db.session.commit()
+
+# Run the load_products function when the script is executed directly
+if __name__ == '__main__':
+    load_products()
