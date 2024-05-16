@@ -1,0 +1,39 @@
+import unittest
+import requests
+
+class APITestCase(unittest.TestCase):
+    BASE_URL = 'http://example.com/api/items'
+
+    def test_delete_item(self):
+        # The ID of the item to delete
+        item_id = 1
+        delete_url = f'{self.BASE_URL}/{item_id}'
+
+        # Send DELETE request to the API to delete the item by ID
+        response = requests.delete(delete_url)
+
+        # Verify the response status code is 200 (OK) or 204 (No Content)
+        self.assertIn(response.status_code, [200, 204], 
+                      msg=f"Expected status code 200 or 204, got {response.status_code}")
+
+        # Optionally, perform additional checks if the API returns content in the response
+        if response.status_code == 200:
+            try:
+                result = response.json()
+                self.assertIsInstance(result, dict, 
+                                      msg="Expected response to be a JSON object")
+                # Verify the result contains a success message or status
+                self.assertIn('message', result, 
+                              msg="Response JSON does not contain 'message' field")
+                self.assertEqual(result['message'], 'Item deleted successfully', 
+                                 msg=f"Expected message 'Item deleted successfully', got '{result['message']}'")
+            except ValueError:
+                self.fail("Response is not in JSON format")
+        
+        # Verify the item is actually deleted by attempting to retrieve it
+        get_response = requests.get(delete_url)
+        self.assertEqual(get_response.status_code, 404, 
+                         msg=f"Expected status code 404 when trying to retrieve deleted item, got {get_response.status_code}")
+
+if __name__ == '__main__':
+    unittest.main()
