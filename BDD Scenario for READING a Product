@@ -1,0 +1,11 @@
+Feature: Reading a Product
+  As a user
+  I want to be able to read product details
+  So that I can view information about a specific product
+
+  Scenario: Reading an existing product
+    Given there is a product with ID "1" in the database
+    When I request to read the product with ID "1"
+    Then the response status code should be 200
+    And the response should contain the product details
+    And the product details should include name, category, price, and availability
