@@ -1,0 +1,7 @@
+from behave import then
+from selenium.webdriver.common.by import By
+
+@then('I should see "{text}"')
+def step_impl(context, text):
+    elements = context.driver.find_elements(By.XPATH, f"//*[contains(text(), '{text}')]")
+    assert elements, f"Expected text '{text}' not found on the page"
