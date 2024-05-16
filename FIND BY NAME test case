@@ -1,0 +1,38 @@
+import unittest
+import requests
+
+class APITestCase(unittest.TestCase):
+    BASE_URL = 'http://example.com/api/items'
+
+    def test_find_by_name(self):
+        # The name of the item to search for
+        item_name = 'example_item_name'
+        find_url = f'{self.BASE_URL}?name={item_name}'
+
+        # Send GET request to the API to find the item by name
+        response = requests.get(find_url)
+
+        # Verify the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200, 
+                         msg=f"Expected status code 200, got {response.status_code}")
+
+        # Verify the response content is a JSON array (assuming multiple items could be returned)
+        try:
+            items = response.json()
+            self.assertIsInstance(items, list, 
+                                  msg="Expected response to be a JSON array")
+        except ValueError:
+            self.fail("Response is not in JSON format")
+
+        # Verify that at least one item matches the search name
+        self.assertTrue(any(item.get('name') == item_name for item in items), 
+                        msg=f"No items found with name '{item_name}'")
+
+        # Optionally, perform additional checks on the items
+        for item in items:
+            self.assertIsInstance(item, dict, msg="Each item should be a dictionary")
+            self.assertIn('id', item, msg="Item does not have 'id' field")
+            self.assertIn('name', item, msg="Item does not have 'name' field")
+
+if __name__ == '__main__':
+    unittest.main()
