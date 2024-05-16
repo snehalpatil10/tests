@@ -1,0 +1,40 @@
+import unittest
+import requests
+
+class APITestCase(unittest.TestCase):
+    BASE_URL = 'http://example.com/api/items'
+
+    def test_list_by_category(self):
+        # The category of the items to list
+        category = 'example_category'
+        list_url = f'{self.BASE_URL}?category={category}'
+
+        # Send GET request to the API to list items by category
+        response = requests.get(list_url)
+
+        # Verify the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200, 
+                         msg=f"Expected status code 200, got {response.status_code}")
+
+        # Verify the response content is a JSON array
+        try:
+            items = response.json()
+            self.assertIsInstance(items, list, 
+                                  msg="Expected response to be a JSON array")
+        except ValueError:
+            self.fail("Response is not in JSON format")
+
+        # Verify that all returned items have the specified category
+        self.assertTrue(all(item.get('category') == category for item in items), 
+                        msg=f"Not all items found have category '{category}'")
+
+        # Optionally, perform additional checks on the items
+        for item in items:
+            self.assertIsInstance(item, dict, msg="Each item should be a dictionary")
+            self.assertIn('id', item, msg="Item does not have 'id' field")
+            self.assertIn('name', item, msg="Item does not have 'name' field")
+            self.assertIn('category', item, msg="Item does not have 'category' field")
+            self.assertIn('available', item, msg="Item does not have 'available' field")
+
+if __name__ == '__main__':
+    unittest.main()
