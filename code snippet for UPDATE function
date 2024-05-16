@@ -1,0 +1,27 @@
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# Example data - replace with your actual database access logic
+items = {
+    1: {'id': 1, 'name': 'Item 1', 'description': 'Description of Item 1', 'available': True},
+    2: {'id': 2, 'name': 'Item 2', 'description': 'Description of Item 2', 'available': False},
+    3: {'id': 3, 'name': 'Item 3', 'description': 'Description of Item 3', 'available': True}
+}
+
+@app.route('/api/items/<int:item_id>', methods=['PUT'])
+def update_item(item_id):
+    # Check if item_id exists in items dictionary
+    if item_id in items:
+        # Get the updated item data from the request body
+        updated_item_data = request.json
+        # Update the item in the dictionary
+        items[item_id].update(updated_item_data)
+        # Return the updated item as JSON
+        return jsonify(items[item_id]), 200
+    else:
+        # If item_id does not exist, return 404 Not Found
+        return jsonify({'message': 'Item not found'}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
